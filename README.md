@@ -1,6 +1,7 @@
 ## Overview
 
 Create a vesting smart contract for the private investors in the $ICONS token launch. The client will give us a list of addressees and how many tokens we should vest for each one of them. The list will look something like:
+
 0x1c7b584166c0D53daBd447563331F0466EBE5976 - 12
 0x9EFf806bA579EE2Bd51bd35B63CD19F6BD6dd0Bd - 423213
 
@@ -21,6 +22,11 @@ Every time the user claims something save how much they have claimed in a mappin
 
 Then the next time the user claims, just give them the difference between the calculated `owedTokens`  and `claimedTokens` and set the `claimedTokens=owedTokens` 
 
-Obviously use safeMath if not using Solidity 0.8.
-
 ---
+## Deployment
+For ropsten deployment set env variables `INFURA_PROJECT_ID` and `ROPSTEN_PRIVATE_KEY`
+
+Deployment command example:
+```
+npx hardhat --network ropsten  deploy-vesting --members 0x9eff806ba579ee2bd51bd35b63cd19f6bd6dd0bd,0xe42682eea1dfc432c2ff5a779cd1d9a1e1c7f405,0x0acd619eD093720d6a70A70f53414A2A05AC8DdE --balances 15000000000000000000,450000000000000000000,4500000000000000000000 --totalbalance 5000000000000000000000 --token 0x21E5A30D8A325c24920570bEF1F30E48EB1bF0Ba
+```
