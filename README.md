@@ -24,12 +24,13 @@ Then the next time the user claims, just give them the difference between the ca
 
 ---
 ## Deployment
-For ropsten deployment set env variables `INFURA_PROJECT_ID` and `RINKEBY_PRIVATE_KEY`
+For rinkeby deployment set env variables `INFURA_PROJECT_ID` and `RINKEBY_PRIVATE_KEY`
 
-Deployment command example:
+Deployment command example for `SportsIcon`:
 ```
 npx hardhat --network rinkeby deploy-token
 ```
+Deployment command example for `SportsIconPrivateVesting`:
 ```
 npx hardhat --network rinkeby  deploy-vesting
 ```
