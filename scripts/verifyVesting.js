@@ -2,11 +2,11 @@ const hre = require('hardhat')
 const fs = require('fs')
 
 async function verifyVesting() {
-    const contracts = JSON.parse(
-        fs.readFileSync(`./contracts.json`, 'utf-8')
+    const sportsIconVestingJSON = JSON.parse(
+        fs.readFileSync(`./sportsIconVesting.json`, 'utf-8')
     );
 
-    if (contracts.network != hre.network.name) {
+    if (sportsIconVestingJSON.network != hre.network.name) {
         throw new Error(
             'Contracts are not deployed on the same network, that you are trying to verify!'
         );
@@ -15,11 +15,11 @@ async function verifyVesting() {
     //verify Vesting contract
     try {
         await hre.run('verify:verify', {
-            address: contracts.vesting,
+            address: sportsIconVestingJSON.vesting,
             constructorArguments: [
-                contracts.sportsIconToken,
-                contracts.members,
-                contracts.balances,
+                sportsIconVestingJSON.sportsIconToken,
+                sportsIconVestingJSON.members,
+                sportsIconVestingJSON.balances,
             ],
         });
     } catch (error) {

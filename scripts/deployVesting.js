@@ -10,10 +10,10 @@ async function deployVesting() {
 	await hre.run('compile');
 	const [deployer] = await ethers.getSigners();
 
-	const contracts = JSON.parse(fs.readFileSync(`./contracts.json`, 'utf-8'));
+	const sportsIconTokenJSON = JSON.parse(fs.readFileSync(`./sportsIconToken.json`, 'utf-8'));
 
 	// Divide total supply into three parts for the three different instances
-	const contractFunds = ethers.BigNumber.from(contracts.totalSupply).div(3);
+	const contractFunds = ethers.BigNumber.from(sportsIconTokenJSON.totalSupply).div(3);
 
 	console.log('Deploying contracts with the account:', deployer.address);
 	console.log('Account balance:', (await deployer.getBalance()).toString());
@@ -23,7 +23,7 @@ async function deployVesting() {
 	const initialSupply = ethers.utils.parseEther("30000000");
 	const sportsIconTokenFactory = await ethers.getContractFactory("SportsIcon");
 
-	let tokenAddress = contracts.sportsIconToken;
+	let tokenAddress = sportsIconTokenJSON.sportsIconToken;
 	let sportsIconToken;
 	if (tokenAddress != "") {
 		sportsIconToken = await sportsIconTokenFactory.attach(tokenAddress, { gasLimit: ethers.BigNumber.from(GAS_LIMIT) });
@@ -45,15 +45,15 @@ async function deployVesting() {
 
 	console.log('SportsIcon Token: ', sportsIconToken.address);
 
-	fs.writeFileSync('./contracts.json', JSON.stringify({
+	fs.writeFileSync('./sportsIconVesting.json', JSON.stringify({
 		network: hre.network.name,
 		sportsIconToken: sportsIconToken.address,
 		vesting: vesting.address,
-		totalSupply: contracts.totalSupply,
+		totalSupply: sportsIconTokenJSON.totalSupply,
 		name,
 		symbol,
-		MEMBERS,
-		BALANCES,
+		members: MEMBERS,
+		balances: BALANCES,
 		owner: deployer.address
 	}, null, 2));
 

@@ -1,0 +1,15 @@
+{
+  "network": "rinkeby",
+  "sportsIconToken": "0xD0B1d57FF9B20E7206b40768BE7169632e60ddC0",
+  "vesting": "0xdA55D353b0ac7Ef27a6bD9504A27DDb953375A23",
+  "totalSupply": "30000000000000000000000000",
+  "name": "ICONS",
+  "symbol": "$ICONS",
+  "members": [
+    "0x0acd619eD093720d6a70A70f53414A2A05AC8DdE"
+  ],
+  "balances": [
+    "40000000"
+  ],
+  "owner": "0x0acd619eD093720d6a70A70f53414A2A05AC8DdE"
+}
