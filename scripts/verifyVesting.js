@@ -3,7 +3,7 @@ const fs = require('fs')
 
 async function verifyVesting() {
     const sportsIconVestingJSON = JSON.parse(
-        fs.readFileSync(`./sportsIconVesting.json`, 'utf-8')
+        fs.readFileSync(`./vesting.json`, 'utf-8')
     );
 
     if (sportsIconVestingJSON.network != hre.network.name) {

@@ -30,7 +30,7 @@ async function deployToken() {
 
     console.log('SportsIcon Token: ', sportsIconToken.address);
 
-    fs.writeFileSync('./sportsIconToken.json', JSON.stringify({
+    fs.writeFileSync('./token.json', JSON.stringify({
         network: hre.network.name,
         sportsIconToken: sportsIconToken.address,
         name,

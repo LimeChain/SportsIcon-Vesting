@@ -3,7 +3,7 @@ const fs = require('fs')
 
 async function verifyToken() {
     const sportsIconTokenJSON = JSON.parse(
-        fs.readFileSync(`./sportsIconToken.json`, 'utf-8')
+        fs.readFileSync(`./token.json`, 'utf-8')
     );
     
     console.log(sportsIconTokenJSON)

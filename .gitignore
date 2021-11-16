@@ -3,5 +3,8 @@ artifacts
 cache
 coverage
 .env
-contracts.json
+.env.dev
+.env.prod
+token.json
+vesting.json
 .DS_Store
