@@ -54,7 +54,7 @@ async function deployVesting() {
 		symbol,
 		members: MEMBERS,
 		balances: BALANCES,
-		owner: deployer.address
+		deployer: deployer.address
 	}, null, 2));
 
 	console.log('Done!');
