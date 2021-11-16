@@ -48,14 +48,14 @@ module.exports = {
       url: `https://rinkeby.infura.io/v3/${process.env.INFURA_PROJECT_ID}`,
       accounts: [`0x${process.env.PRIVATE_KEY}`],
     },
-    // ropsten: {
-    //   url: `https://ropsten.infura.io/v3/${process.env.INFURA_PROJECT_ID}`,
-    //   accounts: [`0x${process.env.ROPSTEN_PRIVATE_KEY}`]
-    // },
-    // mainnet: {
-    //   url: `https://ropsten.infura.io/v3/${process.env.INFURA_PROJECT_ID}`,
-    //   accounts: [`0x${process.env.MAINNET_PRIVATE_KEY}`]
-    // }
+    ropsten: {
+      url: `https://ropsten.infura.io/v3/${process.env.INFURA_PROJECT_ID}`,
+      accounts: [`0x${process.env.ROPSTEN_PRIVATE_KEY}`]
+    },
+    mainnet: {
+      url: `https://ropsten.infura.io/v3/${process.env.INFURA_PROJECT_ID}`,
+      accounts: [`0x${process.env.MAINNET_PRIVATE_KEY}`]
+    }
   },
   solidity: {
     version: "0.7.5",
