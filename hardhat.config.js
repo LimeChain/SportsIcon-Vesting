@@ -1,6 +1,8 @@
 require("@nomiclabs/hardhat-waffle");
-const { types } = require("hardhat/config")
+require("@nomiclabs/hardhat-etherscan");
+require('dotenv').config();
 
+const { types } = require("hardhat/config")
 // This is a sample Hardhat task. To learn how to create your own go to
 // https://hardhat.org/guides/create-task.html
 task("accounts", "Prints the list of accounts", async () => {
@@ -11,15 +13,30 @@ task("accounts", "Prints the list of accounts", async () => {
   }
 });
 
-task("deploy-vesting", "Deploys a Vesting contract")
-  .addParam("members", "Members of this vesting account")
-  .addParam("balances", "Balances of the vested accounts")
-  .addParam("totalbalance", "Total vested balance")
-  .addOptionalParam("token", "The address of the token", "")
+task("deploy-vesting", "Deploys Vesting contract")
   .setAction(async taskArgs => {
-    const deployVesting = require("./scripts/deploy");
-    await deployVesting(taskArgs.members.split(','), taskArgs.balances.split(','), taskArgs.totalbalance, taskArgs.token);
+    const deployVesting = require("./scripts/deployVesting");
+    await deployVesting();
   });
+
+
+task("verify-vesting", "Verify already deployed vesting contract")
+  .setAction(async () => {
+    const { verifyVesting } = require("./scripts/verifyVesting");
+    await verifyVesting();
+  })
+
+task("deploy-token", "Deploys $ICONS token")
+  .setAction(async taskArgs => {
+    const deployVesting = require("./scripts/deployToken");
+    await deployVesting();
+  });
+
+task("verify-token", "Verify already deployed token")
+  .setAction(async () => {
+    const { verifyToken } = require("./scripts/verifyToken");
+    await verifyToken();
+  })
 
 /**
  * @type import('hardhat/config').HardhatUserConfig
@@ -27,13 +44,17 @@ task("deploy-vesting", "Deploys a Vesting contract")
 module.exports = {
   networks: {
     hardhat: {},
+    rinkeby: {
+      url: `https://rinkeby.infura.io/v3/${process.env.INFURA_PROJECT_ID}`,
+      accounts: [`0x${process.env.PRIVATE_KEY}`],
+    },
     ropsten: {
       url: `https://ropsten.infura.io/v3/${process.env.INFURA_PROJECT_ID}`,
-      accounts: [`0x${process.env.ROPSTEN_PRIVATE_KEY}`]
+      accounts: [`0x${process.env.PRIVATE_KEY}`]
     },
     mainnet: {
       url: `https://ropsten.infura.io/v3/${process.env.INFURA_PROJECT_ID}`,
-      accounts: [`0x${process.env.MAINNET_PRIVATE_KEY}`]
+      accounts: [`0x${process.env.PRIVATE_KEY}`]
     }
   },
   solidity: {
@@ -43,5 +64,8 @@ module.exports = {
         enabled: true
       }
     }
+  },
+  etherscan: {
+    apiKey: process.env.ETHERSCAN_API_KEY,
   }
 };

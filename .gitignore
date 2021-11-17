@@ -2,4 +2,9 @@ node_modules
 artifacts
 cache
 coverage
+.env
+.env.dev
+.env.prod
+token.json
+vesting.json
 .DS_Store

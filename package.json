@@ -5,7 +5,15 @@
   "main": "index.js",
   "scripts": {
     "test": "npx hardhat test --network localhost",
-    "compile": "npx hardhat compile"
+    "compile": "npx hardhat compile",
+    "contracts:migrate:token:dev": "env-cmd --silent -f .env.dev npx hardhat deploy-token --network rinkeby",
+    "contracts:verify:token:dev": "env-cmd --silent -f .env.dev npx hardhat verify-token --network rinkeby",
+    "contracts:migrate:vesting:dev": "env-cmd --silent -f .env.dev npx hardhat deploy-vesting --network rinkeby",
+    "contracts:verify:vesting:dev": "env-cmd --silent -f .env.dev npx hardhat verify-vesting --network rinkeby",
+    "contracts:migrate:token:prod": "env-cmd --silent -f .env.prod npx hardhat deploy-token --network mainnet",
+    "contracts:verify:token:prod": "env-cmd --silent -f .env.prod npx hardhat verify-token --network mainnet",
+    "contracts:migrate:vesting:prod": "env-cmd --silent -f .env.prod npx hardhat deploy-vesting --network mainnet",
+    "contracts:verify:vesting:prod": "env-cmd --silent -f .env.prod npx hardhat verify-vesting --network mainnet"
   },
   "repository": {
     "type": "git",
@@ -20,8 +28,11 @@
   "homepage": "https://github.com/LimeChain/SportsIcon-Vesting#readme",
   "devDependencies": {
     "@nomiclabs/hardhat-ethers": "^2.0.2",
+    "@nomiclabs/hardhat-etherscan": "^2.1.7",
     "@nomiclabs/hardhat-waffle": "^2.0.1",
     "chai": "^4.3.4",
+    "dotenv": "^10.0.0",
+    "env-cmd": "^10.1.0",
     "ethereum-waffle": "^3.3.0",
     "ethers": "^5.2.0",
     "hardhat": "^2.3.0"

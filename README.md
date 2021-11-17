@@ -24,9 +24,21 @@ Then the next time the user claims, just give them the difference between the ca
 
 ---
 ## Deployment
-For ropsten deployment set env variables `INFURA_PROJECT_ID` and `ROPSTEN_PRIVATE_KEY`
+For rinkeby deployment set env variables `PRIVATE_KEY`
 
-Deployment command example:
+Deployment command example for `SportsIcon`:
 ```
-npx hardhat --network ropsten  deploy-vesting --members 0x9eff806ba579ee2bd51bd35b63cd19f6bd6dd0bd,0xe42682eea1dfc432c2ff5a779cd1d9a1e1c7f405,0x0acd619eD093720d6a70A70f53414A2A05AC8DdE --balances 15000000000000000000,450000000000000000000,4500000000000000000000 --totalbalance 5000000000000000000000 --token 0x21E5A30D8A325c24920570bEF1F30E48EB1bF0Ba
+npx hardhat --network rinkeby deploy-token
+```
+Deployment command example for `SportsIconPrivateVesting`:
+```
+npx hardhat --network rinkeby  deploy-vesting
+```
+Verification command example for `SportsIcon`:
+```
+npx hardhat --network rinkeby verify-token
+```
+Verification command example for `SportsIconPrivateVesting`:
+```
+npx hardhat --network rinkeby verify-vesting
 ```
