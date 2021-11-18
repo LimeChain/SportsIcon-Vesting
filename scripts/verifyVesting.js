@@ -20,6 +20,7 @@ async function verifyVesting() {
                 sportsIconVestingJSON.sportsIconToken,
                 sportsIconVestingJSON.members,
                 sportsIconVestingJSON.balances,
+                sportsIconVestingJSON.vestingPeriod,
             ],
         });
     } catch (error) {

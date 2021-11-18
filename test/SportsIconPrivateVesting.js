@@ -1,6 +1,7 @@
 const chai = require("chai");
 const expect = chai.expect;
 const { ethers, waffle, network } = require("hardhat");
+const { BigNumber } = ethers;
 chai.use(waffle.solidity);
 
 describe.only("SportsIconPrivateVesting contract", function () {
@@ -10,7 +11,8 @@ describe.only("SportsIconPrivateVesting contract", function () {
 	let owner;
 	let alice;
 	let bob;
-	let balances = [ethers.utils.parseEther("300"), ethers.utils.parseEther("400"), ethers.utils.parseEther("500")]
+	let balances = [ethers.utils.parseEther("200"), ethers.utils.parseEther("700"), ethers.utils.parseEther("1400")]
+	const vestingPeriod = 18;
 
 	const advanceBlockchainTo = async function (timestamp) {
 		await ethers.provider.send('evm_setNextBlockTimestamp', [timestamp]);
@@ -32,7 +34,7 @@ describe.only("SportsIconPrivateVesting contract", function () {
 	it("Should deploy Vesting", async function () {
 		const SportsIconPrivateVesting = await ethers.getContractFactory("SportsIconPrivateVesting");
 
-		sportsIconVesting = await SportsIconPrivateVesting.deploy(sportsIconToken.address, [owner.address, alice.address, bob.address], balances);
+		sportsIconVesting = await SportsIconPrivateVesting.deploy(sportsIconToken.address, [owner.address, alice.address, bob.address], balances, vestingPeriod);
 
 		expect(await sportsIconVesting.token()).to.equal(sportsIconToken.address);
 		expect(await sportsIconVesting.vestedTokensOf(owner.address)).to.equal(balances[0]);
@@ -43,11 +45,10 @@ describe.only("SportsIconPrivateVesting contract", function () {
 	describe("Vesting Calculations", function () {
 
 		beforeEach(async () => {
-
-			const totalPool = ethers.utils.parseEther("1200")
+			const totalPool = ethers.utils.parseEther("2300")
 			const SportsIconPrivateVesting = await ethers.getContractFactory("SportsIconPrivateVesting");
 
-			sportsIconVesting = await SportsIconPrivateVesting.deploy(sportsIconToken.address, [owner.address, alice.address, bob.address], balances);
+			sportsIconVesting = await SportsIconPrivateVesting.deploy(sportsIconToken.address, [owner.address, alice.address, bob.address], balances, vestingPeriod);
 			await sportsIconToken.transfer(sportsIconVesting.address, totalPool);
 
 			expect(await sportsIconToken.balanceOf(sportsIconVesting.address)).to.equal(totalPool);
@@ -60,19 +61,20 @@ describe.only("SportsIconPrivateVesting contract", function () {
 			expect(await sportsIconVesting.freeTokens(alice.address)).to.equal(balances[1].div(10));
 
 			const initialUnlock = balances[1].div(10)
-			const monthlyUnlock = balances[1].sub(initialUnlock).div(12)
+			const monthlyUnlock = balances[1].sub(initialUnlock).div(vestingPeriod)
 
 			const thirtyDays = 30 * 24 * 60 * 60;
 			const time = (await ethers.provider.getBlock("latest")).timestamp
 
 			await advanceBlockchainTo(time + thirtyDays) // 1 months
 			expect(await sportsIconVesting.freeTokens(alice.address)).to.equal(initialUnlock.add(monthlyUnlock));
-
+			
 			await advanceBlockchainTo(time + (thirtyDays * 3)) // 3 months
 			expect(await sportsIconVesting.freeTokens(alice.address)).to.equal(initialUnlock.add(monthlyUnlock.mul(3)));
 
-			await advanceBlockchainTo(time + (thirtyDays * 100)) // more than 12 months
-			expect(await sportsIconVesting.freeTokens(alice.address)).to.equal(initialUnlock.add(monthlyUnlock.mul(12)));
+			
+			await advanceBlockchainTo(time + (thirtyDays * 100)) // more than `vestingPeriod` (months)
+			expect(await sportsIconVesting.freeTokens(alice.address)).to.equal(initialUnlock.add(monthlyUnlock.mul(vestingPeriod)));
 
 		});
 
@@ -96,7 +98,7 @@ describe.only("SportsIconPrivateVesting contract", function () {
 			await advanceBlockchainTo(time + thirtyDays) // 1 months
 
 			const initialUnlock = balances[1].div(10);
-			const monthlyUnlock = balances[1].sub(initialUnlock).div(12)
+			const monthlyUnlock = balances[1].sub(initialUnlock).div(vestingPeriod)
 
 			expect(await sportsIconVesting.claimedOf(alice.address)).to.equal(0);
 
@@ -109,7 +111,7 @@ describe.only("SportsIconPrivateVesting contract", function () {
 		it("Should claim freely initial tokens and monthly separately", async function () {
 
 			const initialUnlock = balances[1].div(10);
-			const monthlyUnlock = balances[1].sub(initialUnlock).div(12)
+			const monthlyUnlock = balances[1].sub(initialUnlock).div(vestingPeriod)
 
 			expect(await sportsIconVesting.claimedOf(alice.address)).to.equal(0);
 

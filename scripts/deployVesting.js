@@ -5,10 +5,35 @@ const fs = require('fs');
 
 const GAS_LIMIT = '8000000'
 
+// TODO to be implemented after exact parameters are available
+const config = {
+	vestingPreSeed: {
+		tokenCap: ethers.utils.parseEther('10000000'), //todo to be changed as per request
+		period: 18, //months
+		members: [], //todo to be provided on 1711
+		balances: [], //todo to be provided on 1711
+	},
+	vestingSeed: {
+		tokenCap: ethers.utils.parseEther('10000000'), //todo to be changed as per request
+		period: 14, //months
+		members: [], //todo to be provided on 1711
+		balances: [], //todo to be provided on 1711
+	},
+	vestingSeedPlus: {
+		tokenCap: ethers.utils.parseEther('10000000'), //todo to be changed as per request
+		period: 12, //months
+		members: [], //todo to be provided on 1711
+		balances: [], //todo to be provided on 1711
+	}
+}
+
 async function deployVesting() {
 
 	await hre.run('compile');
 	const [deployer] = await ethers.getSigners();
+
+	// TEST
+	const vestingPeriod = 14;
 
 	const sportsIconTokenJSON = JSON.parse(fs.readFileSync(`./token.json`, 'utf-8'));
 
@@ -18,23 +43,31 @@ async function deployVesting() {
 	console.log('Deploying contracts with the account:', deployer.address);
 	console.log('Account balance:', (await deployer.getBalance()).toString());
 
-	const name = "ICONS";
-	const symbol = "$ICONS";
-	const initialSupply = ethers.utils.parseEther("30000000");
 	const sportsIconTokenFactory = await ethers.getContractFactory("SportsIcon");
 
-	let tokenAddress = sportsIconTokenJSON.sportsIconToken;
+	const tokenAddress = sportsIconTokenJSON.sportsIconToken;
+
 	let sportsIconToken;
+
 	if (tokenAddress != "") {
 		sportsIconToken = await sportsIconTokenFactory.attach(tokenAddress, { gasLimit: ethers.BigNumber.from(GAS_LIMIT) });
 	} else {
-		sportsIconToken = await sportsIconTokenFactory.deploy(name, symbol, initialSupply, deployer.address, { gasLimit: ethers.BigNumber.from(GAS_LIMIT) });
-		console.log('Waiting for SportsIcon token deployment...');
-		await sportsIconToken.deployed();
+		throw new Error("Invalid sports icon token address")
 	}
 
+	let balances = [];
+	let totalBalance = 0;
+
+	for (let i = 0; i < BALANCES.length; i++) {
+		const balance = ethers.utils.parseEther(BALANCES[i]);
+		totalBalance += Number(balance);
+		balances.push(balance);
+	}
+	
+	if (totalBalance !== Number(contractFunds)) throw new Error("Sum of all balances does not match with the balance of the contract");
+
 	const vestingFactory = await ethers.getContractFactory("SportsIconPrivateVesting");
-	const vesting = await vestingFactory.deploy(sportsIconToken.address, MEMBERS, BALANCES, { gasLimit: ethers.BigNumber.from(GAS_LIMIT) });
+	const vesting = await vestingFactory.deploy(sportsIconToken.address, MEMBERS, balances, vestingPeriod, { gasLimit: ethers.BigNumber.from(GAS_LIMIT) });
 	console.log('Waiting for Vesting deployment...');
 
 	await vesting.deployed();
@@ -49,11 +82,9 @@ async function deployVesting() {
 		network: hre.network.name,
 		sportsIconToken: sportsIconToken.address,
 		vesting: vesting.address,
-		totalSupply: sportsIconTokenJSON.totalSupply,
-		name,
-		symbol,
 		members: MEMBERS,
-		balances: BALANCES,
+		balances,
+		vestingPeriod,
 		deployer: deployer.address
 	}, null, 2));
 
