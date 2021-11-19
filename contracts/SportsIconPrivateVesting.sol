@@ -10,6 +10,7 @@ contract SportsIconPrivateVesting is ISportsIconPrivateVesting {
     using SafeMath for uint256;
 
     mapping(address => uint256) public override vestedTokensOf;
+    mapping(address => uint256) public vestedTokensOfPrivileged;
     mapping(address => uint256) public override claimedOf;
     IERC20 public override token;
     uint256 private startTime;
@@ -19,10 +20,17 @@ contract SportsIconPrivateVesting is ISportsIconPrivateVesting {
         address _tokenAddress,
         address[] memory holders,
         uint256[] memory balances,
+        address[] memory privilegedHolders,
+        uint256[] memory privilegedBalances,
         uint256 _vestingPeriod
     ) {
         require(
-            holders.length == balances.length,
+            (holders.length > 0) && (privilegedHolders.length > 0),
+            "Constructor :: Invalid length of holders or privileged holders"
+        );
+        require(
+            (holders.length == balances.length) &&
+                (privilegedHolders.length == privilegedBalances.length),
             "Constructor :: Holders and balances differ"
         );
         require(
@@ -30,18 +38,24 @@ contract SportsIconPrivateVesting is ISportsIconPrivateVesting {
             "Constructor :: Invalid token address"
         );
         require(_vestingPeriod > 0, "Constructor :: Invalid vesting period");
+
         token = IERC20(_tokenAddress);
         uint256 length = holders.length;
+        uint256 privilegedLength = privilegedHolders.length;
+
         for (uint256 i = 0; i < length; i++) {
+            if (i <= privilegedHolders.length - 1) {
+                vestedTokensOfPrivileged[privilegedHolders[i]] = privilegedBalances[i]; 
+            }
             vestedTokensOf[holders[i]] = balances[i];
         }
+
         vestingPeriod = _vestingPeriod;
         startTime = block.timestamp;
     }
 
     function freeTokens(address user) public view override returns (uint256) {
         uint256 owed = calculateOwed(user);
-        console.log(owed);
         return owed.sub(claimedOf[user]);
     }
 
@@ -57,6 +71,10 @@ contract SportsIconPrivateVesting is ISportsIconPrivateVesting {
     }
 
     function calculateOwed(address user) internal view returns (uint256 owed) {
+        if (vestedTokensOfPrivileged[user] > 0) {
+            return vestedTokensOfPrivileged[user];
+        }
+
         uint256 periodsPassed = ((block.timestamp.sub(startTime)).div(30 days));
         if (periodsPassed > vestingPeriod) {
             periodsPassed = vestingPeriod;
@@ -65,8 +83,6 @@ contract SportsIconPrivateVesting is ISportsIconPrivateVesting {
         uint256 initialUnlock = vestedTokens.div(10);
         uint256 remainder = vestedTokens.sub(initialUnlock);
         uint256 monthlyUnlock = periodsPassed.mul(remainder).div(vestingPeriod);
-        console.log(remainder);
-        console.log(monthlyUnlock);
         return initialUnlock.add(monthlyUnlock);
     }
 }
