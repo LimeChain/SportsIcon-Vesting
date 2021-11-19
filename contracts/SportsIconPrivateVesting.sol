@@ -25,10 +25,6 @@ contract SportsIconPrivateVesting is ISportsIconPrivateVesting {
         uint256 _vestingPeriod
     ) {
         require(
-            (holders.length > 0) && (privilegedHolders.length > 0),
-            "Constructor :: Invalid length of holders or privileged holders"
-        );
-        require(
             (holders.length == balances.length) &&
                 (privilegedHolders.length == privilegedBalances.length),
             "Constructor :: Holders and balances differ"
@@ -40,13 +36,12 @@ contract SportsIconPrivateVesting is ISportsIconPrivateVesting {
         require(_vestingPeriod > 0, "Constructor :: Invalid vesting period");
 
         token = IERC20(_tokenAddress);
-        uint256 length = holders.length;
-        uint256 privilegedLength = privilegedHolders.length;
 
-        for (uint256 i = 0; i < length; i++) {
-            if (i <= privilegedHolders.length - 1) {
-                vestedTokensOfPrivileged[privilegedHolders[i]] = privilegedBalances[i]; 
+        for (uint256 i = 0; i < holders.length; i++) {
+            if ((i <= privilegedHolders.length - 1) && (privilegedHolders.length > 0)) {
+                vestedTokensOfPrivileged[privilegedHolders[i]] = privilegedBalances[i];
             }
+
             vestedTokensOf[holders[i]] = balances[i];
         }
 
