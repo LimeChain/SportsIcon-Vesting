@@ -30,7 +30,7 @@ async function transferFunds() {
     // transfer funds left to Gnosis multisig
     try {
         console.log(`Sending ${leftovers} tokens to Gnosis multisig with address of ${process.env.GNOSIS_SAFE_WALLET}...`);
-        const transferTx = await sportsIconToken.transfer('0x0acd619eD093720d6a70A70f53414A2A05AC8DdE', leftovers, { gasLimit: ethers.BigNumber.from(GAS_LIMIT) });
+        const transferTx = await sportsIconToken.transfer(process.env.GNOSIS_SAFE_WALLET, leftovers, { gasLimit: ethers.BigNumber.from(GAS_LIMIT) });
         await transferTx.wait();
 
     } catch (error) {
