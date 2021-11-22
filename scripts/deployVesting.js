@@ -40,15 +40,16 @@ async function deployVesting() {
 
 	for (let i = 0; i < CONTRACT_INSTANCE.BALANCES.length; i++) {
 		const balance = ethers.utils.parseEther(CONTRACT_INSTANCE.BALANCES[i]);
-		const privilegedBalance = ethers.utils.parseEther(CONTRACT_INSTANCE.PRIVILEGED_BALANCES[i]);
 
-		if (i <= CONTRACT_INSTANCE.PRIVILEGED_BALANCES) {
+		if (i <= CONTRACT_INSTANCE.PRIVILEGED_BALANCES.length - 1) {
+			const privilegedBalance = ethers.utils.parseEther(CONTRACT_INSTANCE.PRIVILEGED_BALANCES[i]);
 			contractFunds += Number(CONTRACT_INSTANCE.PRIVILEGED_BALANCES[i]);
 			privilegedBalances.push(privilegedBalance);
 		}
 
 		contractFunds += Number(CONTRACT_INSTANCE.BALANCES[i]);
 		balances.push(balance);
+
 	}
 
 	const vestingFactory = await ethers.getContractFactory("SportsIconPrivateVesting");
