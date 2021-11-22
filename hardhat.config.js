@@ -19,7 +19,6 @@ task("deploy-vesting", "Deploys Vesting contract")
     await deployVesting();
   });
 
-
 task("verify-vesting", "Verify already deployed vesting contract")
   .setAction(async () => {
     const { verifyVesting } = require("./scripts/verifyVesting");
@@ -36,6 +35,12 @@ task("verify-token", "Verify already deployed token")
   .setAction(async () => {
     const { verifyToken } = require("./scripts/verifyToken");
     await verifyToken();
+  })
+
+task("transfer-funds", "Transfer funds left after deployment of all contract instances")
+  .setAction(async () => {
+    const { transferFunds } = require("./scripts/transferFunds");
+    await transferFunds();
   })
 
 /**

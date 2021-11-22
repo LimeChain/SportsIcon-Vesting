@@ -10,7 +10,7 @@ async function deployToken() {
     await hre.run('compile');
     const [deployer] = await ethers.getSigners();
 
-    console.log('Deploying contract with the account:', deployer.address);
+    console.log('Deploying contract with the account:', GNOSIS_SAFE_WALLET);
     console.log('Account balance:', (await deployer.getBalance()).toString());
 
     const name = '$ICONS Token'
@@ -22,7 +22,7 @@ async function deployToken() {
         name,
         symbol,
         totalSupply,
-        deployer.address,
+        GNOSIS_SAFE_WALLET,
         { gasLimit: ethers.BigNumber.from(GAS_LIMIT) });
 
     console.log('Waiting for SportsIcon token deployment...');
@@ -30,13 +30,13 @@ async function deployToken() {
 
     console.log('SportsIcon Token: ', sportsIconToken.address);
 
-    fs.writeFileSync('./token.json', JSON.stringify({
+    fs.writeFileSync('./TOKEN.json', JSON.stringify({
         network: hre.network.name,
         sportsIconToken: sportsIconToken.address,
         name,
         symbol,
         totalSupply: totalSupply.toString(),
-        owner: deployer.address
+        owner: GNOSIS_SAFE_WALLET
     }, null, 2));
 
     console.log('Done!');

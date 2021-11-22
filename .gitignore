@@ -5,6 +5,8 @@ coverage
 .env
 .env.dev
 .env.prod
-token.json
-vesting.json
+TOKEN.json
+VESTING_PRE_SEED.json
+VESTING_SEED.json
+VESTING_SEED_PLUS.json
 .DS_Store
