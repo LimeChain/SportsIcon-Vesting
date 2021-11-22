@@ -75,7 +75,7 @@ async function deployVesting() {
 
 	console.log('SportsIcon Token: ', sportsIconToken.address);
 
-	fs.writeFileSync(`./vesting.json`, JSON.stringify({
+	fs.writeFileSync(`./VESTING_${process.env.CONTRACT}.json`, JSON.stringify({
 		network: hre.network.name,
 		sportsIconToken: sportsIconToken.address,
 		vesting: vesting.address,

@@ -3,7 +3,7 @@ const fs = require('fs')
 
 async function verifyVesting() {
     const sportsIconVestingJSON = JSON.parse(
-        fs.readFileSync(`./vesting.json`, 'utf-8')
+        fs.readFileSync(`./VESTING_${process.env.CONTRACT}.json`, 'utf-8')
     );
 
     if (sportsIconVestingJSON.network != hre.network.name) {
@@ -13,20 +13,31 @@ async function verifyVesting() {
     }
 
     //verify Vesting contract
-    try {
-        await hre.run('verify:verify', {
-            address: sportsIconVestingJSON.vesting,
-            constructorArguments: [
-                sportsIconVestingJSON.sportsIconToken,
-                sportsIconVestingJSON.holders,
-                sportsIconVestingJSON.balances,
-                sportsIconVestingJSON.privilegedHolders,
-                sportsIconVestingJSON.privilegedBalances,
-                sportsIconVestingJSON.vestingPeriod,
-            ],
-        });
-    } catch (error) {
-        logError('SportsIconPrivateVesting', error.message);
+
+    const contracts = ["PRE_SEED", "SEED", "SEED_PLUS"];
+
+    for (let i = 0; i < contracts.length; i++) {
+
+        console.log("Verifying contract instance: ", contracts[i]);
+
+        try {
+
+            await hre.run('verify:verify', {
+                address: sportsIconVestingJSON.vesting,
+                constructorArguments: [
+                    sportsIconVestingJSON.sportsIconToken,
+                    sportsIconVestingJSON.holders,
+                    sportsIconVestingJSON.balances,
+                    sportsIconVestingJSON.privilegedHolders,
+                    sportsIconVestingJSON.privilegedBalances,
+                    sportsIconVestingJSON.vestingPeriod,
+                ],
+            });
+
+        } catch (error) {
+            logError('SportIcon', error.message);
+        }
+        
     }
 }
 

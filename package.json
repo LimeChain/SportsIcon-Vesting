@@ -10,10 +10,12 @@
     "contracts:verify:token:dev": "env-cmd --silent -f .env.dev npx hardhat verify-token --network rinkeby",
     "contracts:migrate:vesting:dev": "env-cmd --silent -f .env.dev npx hardhat deploy-vesting --network rinkeby",
     "contracts:verify:vesting:dev": "env-cmd --silent -f .env.dev npx hardhat verify-vesting --network rinkeby",
+    "contracts:transfer:dev": "env-cmd --silent -f .env.dev npx hardhat transfer-funds --network rinkeby",
     "contracts:migrate:token:prod": "env-cmd --silent -f .env.prod npx hardhat deploy-token --network mainnet",
     "contracts:verify:token:prod": "env-cmd --silent -f .env.prod npx hardhat verify-token --network mainnet",
     "contracts:migrate:vesting:prod": "env-cmd --silent -f .env.prod npx hardhat deploy-vesting --network mainnet",
-    "contracts:verify:vesting:prod": "env-cmd --silent -f .env.prod npx hardhat verify-vesting --network mainnet"
+    "contracts:verify:vesting:prod": "env-cmd --silent -f .env.prod npx hardhat verify-vesting --network mainnet",
+    "contracts:transfer:prod": "env-cmd --silent -f .env.dev npx hardhat transfer-funds --network mainnet"
   },
   "repository": {
     "type": "git",
