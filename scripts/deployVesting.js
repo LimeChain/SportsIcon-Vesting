@@ -26,7 +26,12 @@ async function deployVesting() {
 	} else {
 		throw new Error("Invalid sports icon token address")
 	}
+
 	const CONTRACT_INSTANCE = config[process.env.CONTRACT];
+
+	for (let i = 0; i < CONTRACT_INSTANCE.HOLDERS.length; i++) {
+		if (CONTRACT_INSTANCE.PRIVILEGED_HOLDERS.includes(CONTRACT_INSTANCE.HOLDERS[i])) throw new Error("Address of user repeats in both 'HOLDERS' array and 'PRIVILEGED_HOLDERS'")
+	}
 
 	const vestingPeriod = CONTRACT_INSTANCE.PERIOD;
 	let balances = [];
