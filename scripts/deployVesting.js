@@ -69,15 +69,18 @@ async function deployVesting() {
 	console.log('Vesting: ', vesting.address);
 
 	console.log(`Sending ${contractFunds} tokens to vesting...`);
-	await (await sportsIconToken.transfer(vesting.address, ethers.utils.parseEther(contractFunds.toString()), { gasLimit: ethers.BigNumber.from(GAS_LIMIT) })).wait();
+	const contractFundsWei = ethers.utils.parseEther(contractFunds.toString());
+	const transferTx = await sportsIconToken.transfer(vesting.address, contractFundsWei, { gasLimit: ethers.BigNumber.from(GAS_LIMIT) })
+	await transferTx.wait();
 
 	console.log('SportsIcon Token: ', sportsIconToken.address);
 
-	fs.writeFileSync('./vesting.json', JSON.stringify({
+	fs.writeFileSync(`./vesting.json`, JSON.stringify({
 		network: hre.network.name,
 		sportsIconToken: sportsIconToken.address,
 		vesting: vesting.address,
 		holders: CONTRACT_INSTANCE.HOLDERS,
+		contractFunds: contractFunds.toString(),
 		balances,
 		privilegedHolders: CONTRACT_INSTANCE.PRIVILEGED_HOLDERS,
 		privilegedBalances,
