@@ -1,6 +1,6 @@
 const hre = require('hardhat')
 const ethers = hre.ethers;
-const { MEMBERS, BALANCES } = require('./deployConfig/index');
+const config = require('./deployConfig/index');
 const fs = require('fs');
 
 const GAS_LIMIT = '8000000'
@@ -12,48 +12,79 @@ async function deployVesting() {
 
 	const sportsIconTokenJSON = JSON.parse(fs.readFileSync(`./token.json`, 'utf-8'));
 
-	// Divide total supply into three parts for the three different instances
-	const contractFunds = ethers.BigNumber.from(sportsIconTokenJSON.totalSupply).div(3);
-
 	console.log('Deploying contracts with the account:', deployer.address);
 	console.log('Account balance:', (await deployer.getBalance()).toString());
 
-	const name = "ICONS";
-	const symbol = "$ICONS";
-	const initialSupply = ethers.utils.parseEther("30000000");
 	const sportsIconTokenFactory = await ethers.getContractFactory("SportsIcon");
 
-	let tokenAddress = sportsIconTokenJSON.sportsIconToken;
+	const tokenAddress = sportsIconTokenJSON.sportsIconToken;
+
 	let sportsIconToken;
+
 	if (tokenAddress != "") {
 		sportsIconToken = await sportsIconTokenFactory.attach(tokenAddress, { gasLimit: ethers.BigNumber.from(GAS_LIMIT) });
 	} else {
-		sportsIconToken = await sportsIconTokenFactory.deploy(name, symbol, initialSupply, deployer.address, { gasLimit: ethers.BigNumber.from(GAS_LIMIT) });
-		console.log('Waiting for SportsIcon token deployment...');
-		await sportsIconToken.deployed();
+		throw new Error("Invalid sports icon token address")
+	}
+
+	const CONTRACT_INSTANCE = config[process.env.CONTRACT];
+
+	for (let i = 0; i < CONTRACT_INSTANCE.HOLDERS.length; i++) {
+		if (CONTRACT_INSTANCE.PRIVILEGED_HOLDERS.includes(CONTRACT_INSTANCE.HOLDERS[i])) throw new Error("Address of user repeats in both 'HOLDERS' array and 'PRIVILEGED_HOLDERS'")
+	}
+
+	const vestingPeriod = CONTRACT_INSTANCE.PERIOD;
+	let balances = [];
+	let privilegedBalances = [];
+	let contractFunds = 0;
+
+	for (let i = 0; i < CONTRACT_INSTANCE.BALANCES.length; i++) {
+		const balance = ethers.utils.parseEther(CONTRACT_INSTANCE.BALANCES[i]);
+
+		if (i <= CONTRACT_INSTANCE.PRIVILEGED_BALANCES.length - 1) {
+			const privilegedBalance = ethers.utils.parseEther(CONTRACT_INSTANCE.PRIVILEGED_BALANCES[i]);
+			contractFunds += Number(CONTRACT_INSTANCE.PRIVILEGED_BALANCES[i]);
+			privilegedBalances.push(privilegedBalance);
+		}
+
+		contractFunds += Number(CONTRACT_INSTANCE.BALANCES[i]);
+		balances.push(balance);
+
 	}
 
 	const vestingFactory = await ethers.getContractFactory("SportsIconPrivateVesting");
-	const vesting = await vestingFactory.deploy(sportsIconToken.address, MEMBERS, BALANCES, { gasLimit: ethers.BigNumber.from(GAS_LIMIT) });
+	const vesting = await vestingFactory.deploy(
+		sportsIconToken.address,
+		CONTRACT_INSTANCE.HOLDERS,
+		balances,
+		CONTRACT_INSTANCE.PRIVILEGED_HOLDERS,
+		privilegedBalances,
+		vestingPeriod,
+		{ gasLimit: ethers.BigNumber.from(GAS_LIMIT) }
+	);
+
 	console.log('Waiting for Vesting deployment...');
 
 	await vesting.deployed();
 	console.log('Vesting: ', vesting.address);
 
-	console.log(`Sending ${contractFunds.toString() / 10 ** 18} tokens to vesting...`);
-	await (await sportsIconToken.transfer(vesting.address, contractFunds, { gasLimit: ethers.BigNumber.from(GAS_LIMIT) })).wait();
+	console.log(`Sending ${contractFunds} tokens to vesting...`);
+	const contractFundsWei = ethers.utils.parseEther(contractFunds.toString());
+	const transferTx = await sportsIconToken.transfer(vesting.address, contractFundsWei, { gasLimit: ethers.BigNumber.from(GAS_LIMIT) })
+	await transferTx.wait();
 
 	console.log('SportsIcon Token: ', sportsIconToken.address);
 
-	fs.writeFileSync('./vesting.json', JSON.stringify({
+	fs.writeFileSync(`./vesting.json`, JSON.stringify({
 		network: hre.network.name,
 		sportsIconToken: sportsIconToken.address,
 		vesting: vesting.address,
-		totalSupply: sportsIconTokenJSON.totalSupply,
-		name,
-		symbol,
-		members: MEMBERS,
-		balances: BALANCES,
+		holders: CONTRACT_INSTANCE.HOLDERS,
+		contractFunds: contractFunds.toString(),
+		balances,
+		privilegedHolders: CONTRACT_INSTANCE.PRIVILEGED_HOLDERS,
+		privilegedBalances,
+		vestingPeriod,
 		deployer: deployer.address
 	}, null, 2));
 

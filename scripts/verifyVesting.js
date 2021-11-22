@@ -18,8 +18,11 @@ async function verifyVesting() {
             address: sportsIconVestingJSON.vesting,
             constructorArguments: [
                 sportsIconVestingJSON.sportsIconToken,
-                sportsIconVestingJSON.members,
+                sportsIconVestingJSON.holders,
                 sportsIconVestingJSON.balances,
+                sportsIconVestingJSON.privilegedHolders,
+                sportsIconVestingJSON.privilegedBalances,
+                sportsIconVestingJSON.vestingPeriod,
             ],
         });
     } catch (error) {
