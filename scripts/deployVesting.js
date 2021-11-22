@@ -12,7 +12,7 @@ async function deployVesting() {
 
 	const sportsIconTokenJSON = JSON.parse(fs.readFileSync(`./token.json`, 'utf-8'));
 
-	console.log('Deploying contracts with the account:', deployer.address);
+	console.log(`Deploying vesting ${process.env.CONTRACT} with the account:`, deployer.address);
 	console.log('Account balance:', (await deployer.getBalance()).toString());
 
 	const sportsIconTokenFactory = await ethers.getContractFactory("SportsIcon");
