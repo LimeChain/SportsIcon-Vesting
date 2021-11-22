@@ -13,12 +13,14 @@ async function verifyVesting() {
     }
 
     //verify Vesting contract
-    try {
-        const contracts = ["PRE_SEED", "SEED", "SEED_PLUS"];
 
-        for (let i = 0; i < contracts.length; i++) {
+    const contracts = ["PRE_SEED", "SEED", "SEED_PLUS"];
 
-            console.log("Verifying contract instance: ", contracts[i]);
+    for (let i = 0; i < contracts.length; i++) {
+
+        console.log("Verifying contract instance: ", contracts[i]);
+
+        try {
 
             await hre.run('verify:verify', {
                 address: sportsIconVestingJSON.vesting,
@@ -31,10 +33,11 @@ async function verifyVesting() {
                     sportsIconVestingJSON.vestingPeriod,
                 ],
             });
-        }
 
-    } catch (error) {
-        logError('SportsIconPrivateVesting', error.message);
+        } catch (error) {
+            logError('SportIcon', error.message);
+        }
+        
     }
 }
 
