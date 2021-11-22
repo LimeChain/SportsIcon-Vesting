@@ -21,8 +21,6 @@ async function transferFunds() {
     const sportsIconTokenFactory = await ethers.getContractFactory("SportsIcon");
     const sportsIconToken = await sportsIconTokenFactory.attach(tokenAddress, { gasLimit: ethers.BigNumber.from(GAS_LIMIT) });
 
-    let contractFunds;
-
     for (let i = 0; i < contracts.length; i++) {
         const contract = JSON.parse(fs.readFileSync(`./VESTING_${contracts[i]}.json`, 'utf-8'));
         console.log('contract.contractFunds: ', contract.contractFunds);
@@ -31,10 +29,8 @@ async function transferFunds() {
 
     // transfer funds left to Gnosis multisig
     try {
-        const leftoversFundsWei = ethers.utils.parseEther(leftovers.toString());
-
-        console.log(`Sending ${contractFunds} tokens to Gnosis multisig with address of ${process.env.GNOSIS_SAFE_WALLET}...`);
-        const transferTx = await sportsIconToken.transfer(process.env.GNOSIS_SAFE_WALLET, leftoversFundsWei, { gasLimit: ethers.BigNumber.from(GAS_LIMIT) });
+        console.log(`Sending ${leftovers} tokens to Gnosis multisig with address of ${process.env.GNOSIS_SAFE_WALLET}...`);
+        const transferTx = await sportsIconToken.transfer('0x0acd619eD093720d6a70A70f53414A2A05AC8DdE', leftovers, { gasLimit: ethers.BigNumber.from(GAS_LIMIT) });
         await transferTx.wait();
 
     } catch (error) {
