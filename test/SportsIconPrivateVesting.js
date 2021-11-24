@@ -15,7 +15,7 @@ describe("SportsIconPrivateVesting contract", function () {
 	let mallory;
 	let balances = [ethers.utils.parseEther("200"), ethers.utils.parseEther("700"), ethers.utils.parseEther("1400")];
 	let privilegedBalances = [ethers.utils.parseEther("200"), ethers.utils.parseEther("200")];
-	const vestingPeriod = 18;
+	const vestingPeriod = 12;
 
 	const advanceBlockchainTo = async function (timestamp) {
 		await ethers.provider.send('evm_setNextBlockTimestamp', [timestamp]);
