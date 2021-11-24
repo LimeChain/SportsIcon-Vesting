@@ -57,14 +57,14 @@ contract SportsIconPrivateVesting is ISportsIconPrivateVesting {
         uint256 tokens = freeTokens(msg.sender);
         claimedOf[msg.sender] = claimedOf[msg.sender].add(tokens);
 
-        token.transfer(msg.sender, tokens);
+        require(token.transfer(msg.sender, tokens), "Claim :: Transfer failed");
 
         emit LogTokensClaimed(msg.sender, tokens);
 
         return tokens;
     }
 
-    function calculateOwed(address user) internal view returns (uint256 owed) {
+    function calculateOwed(address user) internal view returns (uint256) {
         if (vestedTokensOfPrivileged[user] > 0) {
             return vestedTokensOfPrivileged[user];
         }
