@@ -58,7 +58,7 @@ contract SportsIconPrivateVesting is ISportsIconPrivateVesting {
         claimedOf[msg.sender] = claimedOf[msg.sender].add(tokens);
 
         require(token.transfer(msg.sender, tokens), "Claim :: Transfer failed");
-       
+        
         emit LogTokensClaimed(msg.sender, tokens);
 
         return tokens;
